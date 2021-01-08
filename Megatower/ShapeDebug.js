@@ -30,7 +30,6 @@ class ShapeDebug {
     ctx.moveTo(c[3].x, c[3].y)
     ctx.lineTo(c[7].x, c[7].y)
 
-
     ctx.stroke();
 
   }
@@ -42,26 +41,26 @@ class ShapeDebug {
       c[i] = c[i].toIsometric();
     }
     ctx.beginPath();
-    console.log(c[1])
-    ctx.moveTo(c[0].x, c[0].y);
-    ctx.lineTo(c[1].x, c[1].y);
-    ctx.lineTo(c[2].x, c[2].y);
-    ctx.lineTo(c[0].x, c[0].y);
 
-    ctx.moveTo(c[3].x, c[3].y);
-    ctx.lineTo(c[4].x, c[4].y);
-    ctx.lineTo(c[5].x, c[5].y);
-    ctx.lineTo(c[3].x, c[3].y);
+    ctx.moveTo(c[0].x,c[0].y);
+    ctx.lineTo(c[1].x,c[1].y);
+    ctx.lineTo(c[2].x,c[2].y);
+    ctx.lineTo(c[0].x,c[0].y);
 
+    ctx.moveTo(c[3].x,c[3].y);
+    ctx.lineTo(c[4].x,c[4].y);
+    ctx.lineTo(c[5].x,c[5].y);
+    ctx.lineTo(c[3].x,c[3].y);
 
-    ctx.moveTo(c[0].x, c[0].y);
-    ctx.lineTo(c[3].x, c[3].y);
+    ctx.moveTo(c[0].x,c[0].y);
+    ctx.lineTo(c[3].x,c[3].y);
 
-    ctx.moveTo(c[1].x, c[1].y);
-    ctx.lineTo(c[4].x, c[4].y);
+    ctx.moveTo(c[1].x,c[1].y);
+    ctx.lineTo(c[4].x,c[4].y);
 
-    ctx.moveTo(c[2].x, c[2].y);
-    ctx.lineTo(c[5].x, c[5].y);
+    ctx.moveTo(c[2].x,c[2].y);
+    ctx.lineTo(c[5].x,c[5].y);
+
     ctx.stroke();
 
   }

@@ -14,6 +14,7 @@ class World {
       this.player.velocity.y -=20 ;
       this.player.velocity.z = this.controlpad.down.isDown*300 - this.controlpad.up.isDown *300 * (!this.controlpad.down.isDown)
       this.player.velocity.y += this.controlpad.button_A.isPressed * 600
+
       var deltaposition = Vector3.scale(this.player.velocity, elapsed);
       this.player.moveBy(deltaposition);
 
@@ -30,7 +31,6 @@ class World {
     }
 
     var phResult = PH_Solver.AABBvsManyAABB(this.player.box, this.player.velocity, boxes);
-
     this.player.moveBy(Vector3.scale(phResult.normal,phResult.depth));
     if(phResult.normal.y != 0 && phResult.depth != 0){
       this.player.velocity.y = 0;
@@ -54,7 +54,6 @@ class World {
     for(var i = 0; i < this.tilemaps.length; i++){
       this.tilemaps[i].draw(ctx);
     }
-    ShapeDebug.debug_AA_Slope(new AA_Slope(0,32,0,32,32,32),ctx, "green")
 
     this.player.sprite.draw(ctx);
 

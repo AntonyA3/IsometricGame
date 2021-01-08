@@ -4,7 +4,9 @@ class Vector3 {
     this.y = y || 0;
     this.z = z || 0;
   }
-
+  equals(v){
+    return Vector3.equals(this,v);
+  }
   copy(){
     return new Vector3(this.x, this.y, this.z);
   }
@@ -49,6 +51,13 @@ class Vector3 {
     return v0.x * v1.x + v0.y * v1.y + v0.z * v1.z
   }
 
+  static cross(v0, v1){
+    return new Vector3(
+      v0.y * v1.z - v0.z * v1.y,
+      v0.z * v1.x - v0.x * v1.z,
+      v0.x * v1.y - v0.y * v1.x
+    );
+  }
   static equals(v0, v1){
     return v0.x == v1.x && v0.y == v1.y && v0.z == v1.z;
   }
