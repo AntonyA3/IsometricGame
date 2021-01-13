@@ -25,26 +25,21 @@ class World {
     for(var i = 0; i < this.tilemaps.length; i++){
       for (var j = 0; j < this.tilemaps[i].tile_position.length; j++){
         for (var k= 0; k < this.tilemaps[i].tile_position[j].length; k++){
-
           boxes.push(this.tilemaps[i].tile_box[j][k]);
         }
       }
     }
 
-    var phResult = Collision.AABBvsSphere(boxes[0], this.player.sphere);
-    if(phResult.length != 0){
-      if(phResult[1].length > 0){
-        this.player.moveBy(Vector3.scale(phResult[1][1].normal, phResult[1][1].depth))
-        if(phResult[1][1].normal.y != 0){
-          this.player.velocity.y = 0
-        }
-      }
-      if(phResult[1].normal != undefined){
-        this.player.moveBy(Vector3.scale(phResult[1].normal, phResult[1].depth))
-        if(phResult[1].normal.y != 0){
-          this.player.velocity.y = 0
-        }
-      }
+    var phResult = PH_Solver.AABBvsManyAABB(this.player.box, this.player.velocity, boxes);
+    this.player.moveBy(Vector3.scale(phResult.normal,phResult.depth));
+    if(phResult.normal.y != 0 && phResult.depth != 0){
+      this.player.velocity.y = 0;
+    }
+    if(phResult.normal.x != 0 && phResult.depth != 0){
+      this.player.velocity.x = 0;
+    }
+    if(phResult.normal.z != 0 && phResult.depth != 0){
+      this.player.velocity.z = 0;
     }
 
     this.camera.moveFocalPoint(Vector3.subtract(this.player.position, this.camera.focalPoint));
@@ -61,7 +56,6 @@ class World {
     }
 
     this.player.sprite.draw(ctx);
-    ShapeDebug.debug_AA_Box(this.tilemaps[0].tile_box[0][0],ctx, "green")
-    
+
   }
 }

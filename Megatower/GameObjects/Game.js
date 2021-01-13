@@ -114,7 +114,7 @@ class Game {
       }
     }
     this.world.tilemaps.push(tilemap2);
-    this.world.player.moveBy(new Vector3(0,100,0))
+
 
   }
 
