@@ -5,11 +5,12 @@ class Collision{
     if (!((box0.left() >= box1.left()  && box0.left() <=  box1.right()) || (box1.left() >= box0.left()  && box1.left() <=  box0.right()))) return false;
     if (!((box0.bottom() >= box1.bottom()  && box0.bottom() <=  box1.top()) || (box1.bottom() >= box0.bottom()  && box1.bottom() <=  box0.top()))) return false;
     if (!((box0.front() >= box1.front()  && box0.front() <=  box1.back()) || (box1.front() >= box0.front()  && box1.front() <=  box0.back()))) return false;
+
     return true;
-  } /**/
+  }
 
   static AABBintersectsSphere(box, sphere){
-    var d1 = box.halfsize.x + sphere.radius;
+    var d1 = box.halfsize.x  + sphere.radius;
     var d2 = Math.abs(box.position.x - sphere.position.x)
     if(d2 > d1) return false
 
@@ -24,40 +25,146 @@ class Collision{
     return true
   } /**/
 
-  static AABBDynamicvsAABB(aabb0, velocity, aabb1){
-    var startx = aabb0.left() * (velocity.x <0) + aabb0.right() * (velocity.x >0);
-    var starty = aabb0.bottom() * (velocity.y <0) + aabb0.top() * (velocity.y >0);
-    var startz = aabb0.front() * (velocity.y <0) + aabb0.back() * (velocity.z >0);
 
-    var endx = aabb1.left() * (velocity.x >0) + aabb1.right() * (velocity.x <0);
-    var endy = aabb1.bottom() * (velocity.y >0)+ aabb1.top() * (velocity.y <0);
-    var endz = aabb1.front() * (velocity.z >0)+ aabb1.back() * (velocity.z <0);
+  static AABBDynamicvsOBB(aabb, velocity, obb){
+    var start  = new Vector3(
+      aabb.left() * (velocity.x < 0) + aabb.right() * (velocity.x >= 0),
+      aabb.bottom() * (velocity.y < 0) + aabb.top() * (velocity.y >= 0),
+      aabb.front() * (velocity.z < 0) + aabb.back() * (velocity.z >= 0)
+    );
+
+    var negVelocity = Vector3.negate(velocity)
+
+    var dotRight = Vector3.dot(negVelocity, obb.rightVector);
+    var dotUp = Vector3.dot(negVelocity, obb.upVector);
+    var dotDepth = Vector3.dot(negVelocity, obb.depthVector);
+
+    var px = undefined;
+    var py = undefined;
+    var pz = undefined;
+
+    var normalx = undefined;
+    var normaly = undefined;
+    var normalz = undefined;
+
+    if(dotRight < 0){
+      px = Vector3.subtract(obb.position, obb.rightVector)
+      normalx = Vector3.negate(obb.rightVector.normalize())
+    }else {
+      px = Vector3.add(obb.position, obb.rightVector)
+      normalx = obb.rightVector.normalize();
+
+    }
+
+    if(dotUp < 0){
+      py = Vector3.subtract(obb.position, obb.upVector);
+      normaly = Vector3.negate(obb.upVector.normalize())
+    }else {
+      py = Vector3.add(obb.position, obb.upVector);
+      normaly = obb.upVector.normalize();
+    }
+
+    if(dotDepth < 0){
+      pz = Vector3.subtract(obb.position, obb.depthVector);
+      normalz = Vector3.negate(obb.depthVector.normalize())
+    }else {
+      pz = Vector3.add(obb.position, obb.depthVector);
+      normalz = obb.depthVector.normalize();
+    }
+
+    var m = Math.abs(Vector3.dot(velocity, velocity));
+    var nx = m;
+    var ny = m;
+    var nz = m;
+
+    if(dotRight != 0){
+      nx = Vector3.dot(normalx, Vector3.subtract(px,start))
+      / Vector3.dot(negVelocity,normalx);
+    }
+
+    if(dotUp != 0){
+      ny = Vector3.dot(normaly, Vector3.subtract(py,start))
+      / Vector3.dot(negVelocity,normaly);
+    }
+
+    if(dotDepth != 0){
+      nz = Vector3.dot(normalz, Vector3.subtract(pz,start))
+      / Vector3.dot(negVelocity, normalz);
+
+    }
+
+
+    if(nx < ny && nx < nz ){
+      var normal = normalx
+
+      var depth = Vector3.dot(normalx,Vector3.subtract(px,start)) /
+      Vector3.dot(normalx,normalx)
+
+      return {normal:normal, depth:depth}
+
+    }
+
+    if(ny < nx && ny < nz ){
+      var normal = normaly
+
+      var depth = Vector3.dot(normaly,Vector3.subtract(py,start)) /
+      Vector3.dot(normaly,normaly)
+
+      return {normal:normal, depth:depth}
+
+    }
+
+    if(nz < nx && nz < ny ){
+      var normal = normalz;
+      var depth = Vector3.dot(normalz,Vector3.subtract(pz,start)) /
+      Vector3.dot(normalz,normalz);
+      return {normal:normal, depth:depth}
+    }
+
+    return {normal:Vector3.zero(), depth:0}
+
+  }
+  static AABBDynamicvsAABB(aabb0, velocity, aabb1){
+    //minkowski sum
+    var startx = aabb0.left() * (velocity.x < 0) + aabb0.right() * (velocity.x >= 0);
+    var starty = aabb0.bottom() * (velocity.y < 0) + aabb0.top() * (velocity.y >= 0);
+    var startz = aabb0.front() * (velocity.z < 0) + aabb0.back() * (velocity.z >= 0);
+
+    var endx = aabb1.left() * (velocity.x > 0) + aabb1.right() * (velocity.x <= 0);
+    var endy = aabb1.bottom() * (velocity.y > 0)+ aabb1.top() * (velocity.y <= 0);
+    var endz = aabb1.front() * (velocity.z > 0)+ aabb1.back() * (velocity.z <= 0);
 
     if(velocity.equals(Vector3.zero())){
       return {
         normal:new Vector3(0,1,0),
-        depth: Math.abs(starty - endy)
+        depth: 0
       }
     }
+    var negVelocity = Vector3.negate(velocity);
+    var nx = negVelocity.x;
+    var ny = negVelocity.y;
+    var nz = negVelocity.z;
 
-    var nx = Math.POSITIVE_INFINITY;
-    var ny = Math.POSITIVE_INFINITY;
-    var nz = Math.POSITIVE_INFINITY;
+
     if(velocity.x != 0){
-      nx = Math.abs((endx -startx) / -velocity.x);
+      nx = (endx - startx) / negVelocity.x;
     }
     if(velocity.y != 0){
-      ny = Math.abs((endy - starty) / -velocity.y);
+      ny = (endy - starty) / negVelocity.y;
     }
     if(velocity.z != 0){
-      nz = Math.abs((endz -startz) / -velocity.z);
+      nz = (endz - startz) / negVelocity.z;
+    }
+    if(nx == ny && nx == nz){
+      return {normal:new Vector3(-1*Math.sign(velocity.x),0,0), depth: 0}
+
     }
 
     if(nx < ny && nx < nz){
       return {normal:new Vector3(-1*Math.sign(velocity.x),0,0), depth: Math.abs(startx - endx)}
     }
 
-    if(ny < nx && ny < nz){
+    if(ny < nx && ny <nz){
       return {normal:new Vector3(0,-1*Math.sign(velocity.y),0), depth: Math.abs(starty - endy)}
     }
 
@@ -65,7 +172,7 @@ class Collision{
       return {normal:new Vector3(0,0,-1*Math.sign(velocity.z)), depth: Math.abs(startz - endz)}
 
     }
-    return {normal:new Vector3(0,-1*Math.sign(velocity.y),0), depth: Math.abs(starty - endy)}
+    return {normal:new Vector3(0,-1*Math.sign(velocity.y),0), depth: 0}
 
 
 
@@ -88,10 +195,10 @@ class Collision{
 
   } /**/
   static SeperateAxisIntersection(verticies0, verticies1, axis1normal, axis2normal){
-    verticies0Min = Number.POSITIVE_INFINITY;
-    verticies0Max = Number.NEGATIVE_INFINITY;
-    verticies1Min = Number.POSITIVE_INFINITY;
-    verticies1Max = Number.NEGATIVE_INFINITY;
+    var verticies0Min = Number.POSITIVE_INFINITY;
+    var verticies0Max = Number.NEGATIVE_INFINITY;
+    var verticies1Min = Number.POSITIVE_INFINITY;
+    var verticies1Max = Number.NEGATIVE_INFINITY;
 
     for(var i = 0; i < verticies0.length; i++){
       var d = Vector3.negate(Vector3.dot(verticies0[i], axis1normal)) / Vector3.dot(axis1normal, axis1normal);
@@ -118,20 +225,32 @@ class Collision{
 
   }
   static AABBintersectsOBB(aabb,obb){
-    var obb_min_x = obb.minX();
-    if (!((obb_min_x>= aabb.left() && obb.minX() <= aabb.right() ||(aabb.left()  >= obb_min_x && aabb.left() <= obb_min_x))))return false;
-    var obb_min_y = obb.minY();
-    if (!((obb_min_y >= aabb.bottom() && obb_min_y <= aabb.top() ||(aabb.bottom()  >= obb_min_y && aabb.bottom() <= obb_min_y)))) return false;
-    var obb_min_z = obb.minZ();
-    if (!((obb_min_z >= aabb.front() && obb.minZ() <= aabb.back() ||(aabb.front()  >= obb_min_z && aabb.front() <= obb_min_z)))) return false;
+    var limits = obb.limits()
+
+    if (
+      (!(aabb.left() >= limits.minx && aabb.left() <= limits.maxx) ||
+    (limits.minx >= aabb.left()  && limits.minx <=  aabb.right()))
+    ) return false;
+
+    if (
+      (!(aabb.bottom() >= limits.miny && aabb.bottom() <= limits.maxy) ||
+    (limits.miny >= aabb.bottom()  && limits.miny <=  aabb.top()))
+    ) return false;
+
+    if (
+      (!(aabb.front() >= limits.minz && aabb.front() <= limits.maxz) ||
+    (limits.minz >= aabb.front()  && limits.minz <=  aabb.back()))
+    ) return false;
+
+
     //Todo: seperate axis theorem;
 
-    var obb_verticies = obb.verticies();
-    var aabb_verticies = aabb.verticies();
-
-    if(!SeperateAxisIntersection(aabb_verticies, obb_verticies, obb.depthVector, obb.upVector)) return false;
-    if(!SeperateAxisIntersection(aabb_verticies, obb_verticies, obb.rightVector, obb.depthVector)) return false;
-    if(!SeperateAxisIntersection(aabb_verticies, obb_verticies, obb.rightVector, obb.upVector)) return false;
+    //var obb_verticies = obb.verticies();
+    //var aabb_verticies = aabb.verticies();
+    //console.log("passd")
+    //if(!Collision.SeperateAxisIntersection(aabb_verticies, obb_verticies, obb.depthVector, obb.upVector)) return false;
+    //if(!Collision.SeperateAxisIntersection(aabb_verticies, obb_verticies, obb.rightVector, obb.depthVector)) return false;
+    //if(!Collision.SeperateAxisIntersection(aabb_verticies, obb_verticies, obb.rightVector, obb.upVector)) return false;
 
     return true;
   } /**/

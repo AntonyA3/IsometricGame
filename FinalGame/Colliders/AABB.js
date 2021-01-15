@@ -56,4 +56,15 @@ class AABB {
   static empty(){
     return new AABB(new Vector3(0,0,0), new Vector3(0,0,0))
   }
+
+  static intersection_depth(aabb0, aabb1){
+
+    var sx = Math.min(aabb0.right(), aabb1.right()) - Math.max(aabb0.left(), aabb1.left());
+    var sy = Math.min(aabb0.top(), aabb1.top()) - Math.max(aabb0.bottom(), aabb1.bottom());
+    var sz = Math.min(aabb0.back(), aabb1.back()) - Math.max(aabb0.front(), aabb1.front());
+
+    return {dx: sx, dy:sy, dz:sz};
+
+
+  }
 }

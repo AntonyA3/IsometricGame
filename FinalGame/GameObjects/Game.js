@@ -2,6 +2,8 @@ class Game {
   constructor() {
 
     this.world = new World();
+    this.controlpad = new VirtualControlPad();
+    this.world.controlpad = this.controlpad;
 
   }
 
@@ -12,6 +14,8 @@ class Game {
 
   update(elapsed){
     this.world.update(elapsed);
+    this.controlpad.postUpdate();
+
   }
 
   draw(elapsed, ctx){
