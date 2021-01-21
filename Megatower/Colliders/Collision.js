@@ -44,6 +44,7 @@ class Collision{
   static SeperateAxisIntersection(verticies0, verticies1, axis1normal, axis2normal){
     verticies0Min = Number.POSITIVE_INFINITY;
     verticies0Max = Number.NEGATIVE_INFINITY;
+    
     verticies1Min = Number.POSITIVE_INFINITY;
     verticies1Max = Number.NEGATIVE_INFINITY;
 
