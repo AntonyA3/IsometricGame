@@ -1,0 +1,86 @@
+{
+    "name": "Walled Garden",
+    "containing_box": [
+        {
+            "box":[0,0,0,96,24,96],
+            "clamp_min_x": true,
+            "clamp_max_x": true,
+            "clamp_min_y": true,
+            "clamp_max_y": false,
+            "clamp_min_z": true,
+            "clamp_max_z": true
+        }
+    ],
+    "texture_assets":["../assets/test_player.png", "../assets/test_tiles.png"],
+    "tilemap": [
+        {   
+            "position":[0,-24,0],
+            "data": [
+                ["a","b","a","b"],
+                ["b","a","b","a"],
+                ["a","b","a","b"],
+                ["b","a","b","a"]
+            ],
+            "tiles": [
+                {   "key":"a",
+                    "src_area":[0,0,48,48],
+                    "volume":[0,0,0,24,24,24]
+                },
+                {
+                    "key": "b",
+                    "src_area":[48,0,48,48],
+                    "volume":[0,0,0,24,24,24]
+                }
+            ],        
+            "texture_index": 1,
+            "i_vector": [24,0,0],
+            "j_vector": [0,0,24]
+        },
+        {   
+            "position":[96,0,0],
+            "data": [
+                ["a","b","a","b"],
+                ["b","a","b","a"],
+                ["a","b","a","b"],
+                ["b","a","b","a"]
+            ],
+            "tiles": [
+                {   "key":"a",
+                    "src_area":[336,0,48,48],
+                    "volume":[0,0,0,24,24,24]
+                },
+                {
+                    "key": "b",
+                    "src_area":[288,0,48,48],
+                    "volume":[0,0,0,24,24,24]
+                }
+            ],        
+            "texture_index": 1,
+            "i_vector": [24,24,0],
+            "j_vector": [0,0,24]
+        },
+        {   
+            "position":[-168,0,-72],
+            "data": [
+                ["a","b","a","b"],
+                ["b","a","b","a"],
+                ["a","b","a","b"],
+                ["b","a","b","a"]
+            ],
+            "tiles": [
+                {   "key":"a",
+                    "src_area":[192,0,48,48],
+                    "volume":[0,0,0,24,24,24]
+                },
+                {
+                    "key": "b",
+                    "src_area":[240,0,48,48],
+                    "volume":[0,0,0,24,24,24]
+                }
+            ],        
+            "texture_index": 1,
+            "i_vector": [24,-24,0],
+            "j_vector": [0,0,24]
+        }
+    ]
+}   
