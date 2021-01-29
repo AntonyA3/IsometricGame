@@ -1,13 +1,7 @@
 class Plane{
-    constructor(position, direction){
+    constructor(position, normal){
         this.position = position;
-        this.direction = direction;
+        this.normal = normal;
     }
-
-    min(){
-        return Vector3.subtract(this.position, this.direction);
-    }
-    max(){
-        return Vector3.add(this.position, this.direction);
-    }
+    
 }

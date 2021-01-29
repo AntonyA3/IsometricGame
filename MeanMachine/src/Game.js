@@ -4,6 +4,7 @@ class Game{
         this.world = new World(this.controlPad);
         this.level_num = -1;
         this.leveldata=""
+        this.started = false;
         this.initWorld(this)
     }
 
@@ -23,28 +24,7 @@ class Game{
                 textures.push(img);
             }
         }
-        game.world.containing_box = [];
-        if (level.hasOwnProperty('containing_box')){
-            for(var i = 0; i < level['containing_box'].length; i++){
-                var boxdata = level['containing_box'][i].box;
-                var box = AxisAlignedBox.fromStartAndSize(
-                    new Vector3(boxdata[0],boxdata[1],boxdata[2]), 
-                    new Vector3(boxdata[3],boxdata[4],boxdata[5])
-                )
-                
-                var cb = new ContainingBox();
-                cb.collider = box;
-                cb.clamp_min_x = level['containing_box'][i].clamp_min_x
-                cb.clamp_max_x = level['containing_box'][i].clamp_max_x
-                cb.clamp_min_y = level['containing_box'][i].clamp_min_y
-                cb.clamp_max_y = level['containing_box'][i].clamp_max_y
-                cb.clamp_min_z = level['containing_box'][i].clamp_min_z
-                cb.clamp_max_z = level['containing_box'][i].clamp_max_z
-
-                game.world.containing_box.push(cb)
-               
-            }
-        }
+      
         game.world.tilemap = []
         for(var i = 0; i < level["tilemap"].length; i++){
             var tilemap_data = level["tilemap"][i]
@@ -105,6 +85,7 @@ class Game{
             }
             game.world.tilemap.push(tilemap)
         }
+        this.started = true
 
     }
     update(elapsed){

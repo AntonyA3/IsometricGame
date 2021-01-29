@@ -1,69 +1,61 @@
 class World{
     constructor(controlPad){
         this.player = new Player();
+
+        
         this.camera = new Camera();        
-        this.camera.initialize_focal_point(this.player.position);
+        this.camera.initialize_focal_point(this.player.position.copy());
 
 
 
         this.containing_box = []
         this.collider_box = []
-        this.collider_slopedxdy = []
-        this.collider_slopedxdy.push(
-            Slope.fromStartAndSize(new Vector3(24*4,0,0), new Vector3(24*4, 24*4, 24*4), Slope_Type.DX_DY)
-        )
-        this.collider_slopedxdy.push(
-            Slope.fromStartAndSize(new Vector3(-24*4,0,0), new Vector3(24*4, 24*4, 24*4), Slope_Type.NDX_DY)
-        )
-
-        this.collider_slopedxdy.push(
-            Slope.fromStartAndSize(new Vector3(0,0,24*4), new Vector3(24*4, 24*4, 24*4), Slope_Type.DZ_DY)
-        )
-
-        this.collider_slopedxdy.push(
-            Slope.fromStartAndSize(new Vector3(0,0,-24*4), new Vector3(24*4, 24*4, 24*4), Slope_Type.NDZ_DY)
-        )
-        
+        this.collider_slope = []
         
         
 
         this.collider_box.push(new BoxCollider(new Vector3(0,-24,0), new Vector3(24*4,24,24*4),true,true,true,true,true,true))
+        this.collider_slope.push(new SlopeCollider(new Vector3(0,0,-24*4), new Vector3(24*4,24*4,24*4), SlopeColliderType.SLOPE_010_110))
         this.tilemap = []
         this.controlPad = controlPad;
+
+
     }
 
     update(elapsed){
         this.player.velocity.x = this.controlPad.left.isDown * (!this.controlPad.right.isDown) * 
-        -100 + (this.controlPad.right.isDown * 100 * (1 - this.player.dydx));
+        -100 + (this.controlPad.right.isDown * 100);
         this.player.velocity.y -= 10;
         this.player.velocity.z = this.controlPad.up.isDown * (!this.controlPad.down.isDown) * 
         -100 + this.controlPad.down.isDown * 100;
         
-
         this.player.move_by_position(Vector3.scale(this.player.velocity,elapsed))
 
 
         
-        /*
         
-        for(var i = 0; i < this.collider_slopedxdy.length; i++){
-            if(CollisionUtils.AABBintersectsSlope(this.player.boxCollider, this.collider_slopedxdy[i])){
-                var manifold = CollisionUtils.AABBvsSlope(this.player.boxCollider, this.player.velocity, this.collider_slopedxdy[i])       
-                this.player.move_by_position(Vector3.scale(manifold.normal,manifold.depth))
-                if(manifold.normal.y != 0) {this.player.velocity.y = 0};
-                this.player.dydx = 0;
-            }
-        }
-        */
+        
+        
+        
         for(var i = 0; i < this.collider_box.length; i++){
-            if(CollisionUtils.BoxColliderintersectsBoxCollider(this.player.boxCollider.getBoundingBox(), this.collider_box[i])){
-                var manifold = CollisionUtils.BoxColldervsBoxCollider(this.player.boxCollider, this.player.velocity, this.collider_box[i], false, false, true, true, false, false)
-                if(manifold.normal.y != 0) {this.player.velocity.y = 0};
-                this.player.dydx = 0;
+            if(BoxColliderUtils.BoxColliderintersectsBoxCollider(this.player.boxCollider, this.collider_box[i])){
+                var manifold = BoxColliderUtils.BoxCollidervsBoxCollider(this.player.boxCollider, this.player.velocity, this.collider_box[i])
+                if(manifold.direction.y != 0) {this.player.velocity.y = 0};
 
-                this.player.move_by_position(Vector3.scale(manifold.normal,manifold.depth))
+                this.player.move_by_position(Vector3.scale(manifold.direction,manifold.speed))
             }
         }
+
+        for(var i = 0; i < this.collider_slope.length; i++){
+            if(BoxColliderUtils.BoxColliderintersectsSlopeCollider(this.player.boxCollider, this.collider_slope[i])){
+                var manifold = BoxColliderUtils.BoxCollidervsSlopeCollider(this.player.boxCollider, this.player.velocity, this.collider_slope[i])       
+                this.player.move_by_position(Vector3.scale(manifold.direction,manifold.speed))
+                if(manifold.direction.y != 0) {this.player.velocity.y = 0};
+            }
+        }
+        
+
+
 
         
         
@@ -126,7 +118,7 @@ class World{
         }*/
         
         
-        this.camera.initialize_focal_point(this.player.position);
+        this.camera.initialize_focal_point(this.player.position.copy());
 
         
         
@@ -142,6 +134,8 @@ class World{
                 }
             }
         }
+
+        
 
         this.player.sprite.draw(ctx);
         

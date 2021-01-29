@@ -1,11 +1,11 @@
 class Player{
     constructor(){
-        this.position = new Vector3(0,0,0);
+
+        this.position = Vector3.zero();
+
         this.direction = Vector3.zero();
-        this.speed = 100;
         this.velocity = Vector3.zero();
         this.boxCollider = new BoxCollider(new Vector3(0,0,0), new Vector3(24,48,24),true,true,true,true,true,true);
-        this.dydx = 0;
         var img = new Image();
         img.onload = function(){
         }
@@ -17,6 +17,7 @@ class Player{
     }
 
     move_by_position(movement){
+    
         this.position = Vector3.add(this.position, movement);
         this.boxCollider.position = Vector3.add(this.boxCollider.position, movement);
         this.sprite.position = Vector3.add(this.sprite.position, movement);
