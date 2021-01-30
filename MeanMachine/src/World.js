@@ -6,16 +6,22 @@ class World{
         this.camera = new Camera();        
         this.camera.initialize_focal_point(this.player.position.copy());
 
-
-
         this.containing_box = []
         this.collider_box = []
         this.collider_slope = []
         
+        this.collider_height = [];
+        this.collider_height.push(new HeightPlaneCollider(new Vector3(0,0,-24*4),new Vector2(24*4, 24*4),HeightPlaneType.V,
+        24*4, 0, 0, 0, false, false, false, true, true, false, false));
         
 
         this.collider_box.push(new BoxCollider(new Vector3(0,-24,0), new Vector3(24*4,24,24*4),true,true,true,true,true,true))
-        this.collider_slope.push(new SlopeCollider(new Vector3(0,0,-24*4), new Vector3(24*4,24*4,24*4), SlopeColliderType.SLOPE_010_110))
+        
+        //this.collider_slope.push(new SlopeCollider(new Vector3(24*4,0,0), new Vector3(24*4,24*4,24*4), SlopeColliderType.SLOPE_110_111))
+        //this.collider_slope.push(new SlopeCollider(new Vector3(0,0,24*4), new Vector3(24*4,24*4,24*4), SlopeColliderType.SLOPE_111_011))
+        //this.collider_slope.push(new SlopeCollider(new Vector3(-24*4,0,0), new Vector3(24*4,24*4,24*4), SlopeColliderType.SLOPE_011_010))
+
+         
         this.tilemap = []
         this.controlPad = controlPad;
 
@@ -46,9 +52,19 @@ class World{
             }
         }
 
+        for(var i = 0; i < this.collider_height.length; i++){
+            if(BoxColliderUtils.BoxColliderintersectsHeightPlaneCollider(this.player.boxCollider, this.collider_height[i])){
+                var manifold = BoxColliderUtils.BoxCollidervsHeightPlaneCollider(this.player.boxCollider, this.player.velocity, this.collider_height[i])
+                if(manifold.direction.y != 0) {this.player.velocity.y = 0};
+
+                this.player.move_by_position(Vector3.scale(manifold.direction,manifold.speed))
+            }
+        }
+
         for(var i = 0; i < this.collider_slope.length; i++){
             if(BoxColliderUtils.BoxColliderintersectsSlopeCollider(this.player.boxCollider, this.collider_slope[i])){
                 var manifold = BoxColliderUtils.BoxCollidervsSlopeCollider(this.player.boxCollider, this.player.velocity, this.collider_slope[i])       
+             
                 this.player.move_by_position(Vector3.scale(manifold.direction,manifold.speed))
                 if(manifold.direction.y != 0) {this.player.velocity.y = 0};
             }

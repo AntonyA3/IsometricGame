@@ -33,13 +33,13 @@ class SlopeCollider{
         var center =  this.center();
         switch(this.type){
             case SlopeColliderType.SLOPE_010_110:
-                return new Plane(center.copy(),Vector3.cross(new Vector3(0, this.size.y, -this.size.z ), new Vector3(-1,0,0)).normalize());
+                return new Plane(center.copy(),Vector3.cross(new Vector3(0, this.size.y, -this.size.z ), new Vector3(-1,0,0)).normalize()); 
             case SlopeColliderType.SLOPE_110_111:
-                return new Plane(center.copy(),Vector3.cross(new Vector3(0,0,1), new Vector3(-this.size.x,-this.size.y,0)).normalize());
+                return new Plane(center.copy(),Vector3.cross(new Vector3(0,0,1), new Vector3(this.size.x,this.size.y,0)).normalize());
             case SlopeColliderType.SLOPE_111_011:
-                return new Plane(center.copy(),Vector3.cross(new Vector3(-1,0,0), new Vector3(0, -this.size.y, -this.size.z)).normalize());
+                return new Plane(center.copy(),Vector3.cross(new Vector3(0, this.size.y, this.size.z ), new Vector3(1,0,0)).normalize());
             case SlopeColliderType.SLOPE_011_010:
-                return new Plane(center.copy(),Vector3.cross(new Vector3(0,0,-1), new Vector3(this.size.x, -this.size.y, 0)).normalize());
+                return new Plane(center.copy(),Vector3.cross(new Vector3(-this.size.x, this.size.y, 0), new Vector3(0,0,1)).normalize());
 
         }
     }
