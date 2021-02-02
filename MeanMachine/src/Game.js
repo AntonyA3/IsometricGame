@@ -44,8 +44,13 @@ class Game{
             var tile_setdata = tilemap_data["tiles"];
             var tile_hash_map = new Map();
             for (var j = 0; j < tile_setdata.length; j++){
-                var tile = tile_setdata[j]
+                var tile = tile_setdata[j]            
                 var sprite = new Sprite3d();
+                sprite.volume =  new VolumeBox(
+                    new Vector3(tile.volume[0], tile.volume[1], tile.volume[2]),
+                    new Vector3(tile.volume[3], tile.volume[4], tile.volume[5])
+                );
+
                 sprite.srcRect = new Rect(tile.src_area[0], tile.src_area[1], tile.src_area[2], tile.src_area[3]);
                 sprite.position = new Vector3(
                     tile.volume[0],
@@ -101,7 +106,7 @@ class Game{
                 request.onreadystatechange = function(){
 
                     if(this.readyState ==4 && this.status ==200){
-                        Game.setLevel(this, the_game)
+                        //Game.setLevel(this, the_game)
                     }
                 }
                 
