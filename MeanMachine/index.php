@@ -1,13 +1,14 @@
 [<?php
     header("Access-Control-Allow-Origin: *");
 
-    switch($_REQUEST['level']){
-
-        case "level_i":
-            $object = file_get_contents("assets/leveldata/level_i.json");
-            echo $object;
-        
-
-    }
+    $id = $_REQUEST['roomid'];
+    $filename = "assets/leveldata/room{$id}.json";
+    $data =file_get_contents($filename);
+    echo json_encode( 
+        array(
+            "data" => $data,
+            "id" => $id
+        )
+    );  
     
 ?> 

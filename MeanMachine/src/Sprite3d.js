@@ -18,14 +18,24 @@ class Sprite3d{
         return s;
     }
 
-    offset(v){
+    move_to_position(posnew){
+        var deltaPosition3d = Vector3.subtract(posnew, this.position);
+        var deltaPosition2d = deltaPosition3d.toIsometric();
+        this.position = Vector3.add(this.position, deltaPosition3d);
+        this.volume.start = Vector3.add(this.volume.start, deltaPosition3d);
+        this.drawRect.x += deltaPosition2d.x;
+        this.drawRect.y += deltaPosition2d.y;
+
+    }
+
+    move_by_position(v){
         this.position = Vector3.add(this.position, v);
         this.volume.start = Vector3.add(this.volume.start, v);
         var iso = v.toIsometric();
         this.drawRect.x += iso.x;
         this.drawRect.y += iso.y;
     }
-    
+
 
     draw(ctx){
         ctx.drawImage(this.image, this.srcRect.x, this.srcRect.y, this.srcRect.sx, this.srcRect.sy,
