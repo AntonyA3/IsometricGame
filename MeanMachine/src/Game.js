@@ -11,10 +11,8 @@ class Game{
 
     }
 
-
     static createRoom(request ,game){
        
-        console.log(request.response)
 
         var j = request.response.slice(1);
         var room = JSON.parse(j);
@@ -69,7 +67,6 @@ class Game{
         }
         request.open("POST","http://127.0.0.1:8000/index.php?roomid=2", true);
         request.send();
-        //request.abort()
             
     }
 

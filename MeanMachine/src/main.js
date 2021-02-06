@@ -2,6 +2,7 @@
 const canvas = document.getElementById("canvas")
 var ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
+ctx.ALP
 var game = new Game();
 var elapsed = 1/60.0;
 var time = 0;

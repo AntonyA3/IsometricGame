@@ -1,33 +1,34 @@
+
 class World{
     constructor(controlpad){
+
         this.controlPad = controlpad;
+
         this.imageMap = new Map();
-
-        this.imageMap.set("test_tiles", new Image());
-        this.imageMap.get("test_tiles").onload = function(){}
-        this.imageMap.get("test_tiles").src = "../assets/test_tiles.png"
-
-        //this.imageMap.set("test_player", new Image());
-
-
         this.camera = new Camera();
         this.player = new Player();
         this.roomMap = new Map();
 
+        this.roomIsTransitioning = false;
         this.roomTransition = new Map();
-        
-        this.roomTransition.set(1, new Map());
-        var b = this.roomTransition.get(1)
-        b.set(2, new RoomTransition());
+        this.roomTransition.set(1, new RoomTransition());
+        this.roomTransition.get(1).nextRoom = 2;
 
-        this.roomTransition.set(2, new Map());
+        this.roomTransition.set(2, new RoomTransition());
+        this.roomTransition.get(2).nextRoom = 1;
 
-        b = this.roomTransition.get(2)
-        b.set(1, new RoomTransition());
-
+ 
         this.activeRoomId = null;
+        
+        this.activeRoomTransition = new RoomTransition() ;
+        
 
      
+    }
+
+    freezePlayer(value){
+        this.roomMap.get(this.activeRoomId).freezePlayer(value);
+
     }
 
     setActiveRoomByID(id){
@@ -46,28 +47,37 @@ class World{
 
     }
 
-    requestRoomByID(id){
-        var previousId = this.activeRoomId;
+    requestRoomByTransitionID(id){
+        if(!this.activeRoomTransition.transitioning){
+            this.activeRoomTransition = this.roomTransition.get(id);
+            this.activeRoomTransition.startTransition(this);
+        }
         
-        console.log(id)
-        var roomTransition = this.roomTransition.get(previousId).get(id);
-        this.activeRoomId = id;
-        this.player.move_to_position(roomTransition.playerStartPosition);
-        this.camera.move_to_focus(roomTransition.cameraStartPosition)
-        this.camera.mode = Camera_Mode.PERFECT_FOLLOW;
 
-        //use the room transition system to change the player, and the camera;
     }
 
     update(elapsed){
+        
         if(this.activeRoomId != null){
             this.roomMap.get(this.activeRoomId).update(elapsed)
         }
+        if(this.activeRoomTransition.transitioning){
+            this.activeRoomTransition.update(elapsed, this)
+        }
+
+        
     }
 
     draw(ctx){
+        
+        
         if(this.activeRoomId != null){
             this.roomMap.get(this.activeRoomId).draw(ctx)
         }
+        if(this.activeRoomTransition.transitioning){
+            this.activeRoomTransition.drawOverlay(ctx, this.camera.bounds);
+        }
+       
+        
     }
 }

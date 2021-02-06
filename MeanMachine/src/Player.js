@@ -4,7 +4,10 @@ const Movement_State = {
     SWIMMING: 2,
     DASHTOPATH: 3
 }
-
+const PLAYER_CONTROLLER ={
+    HUMAN_PLAYER: 0,
+    ROOM_TRANSITION_CONTROLLER: 1
+}
 class Player{
     constructor(){
 
@@ -54,15 +57,8 @@ class Player{
     move_by_position(movement){
     
         this.position = Vector3.add(this.position, movement);
-       
-
         this.boxCollider.position = Vector3.add(this.boxCollider.position, movement);
         this.sprite.move_by_position(movement)
-        //this.sprite.position = Vector3.add(this.sprite.position, movement);
-        //this.sprite.volume.start = Vector3.add(this.sprite.volume.start, movement)
-        //var iso_move = movement.toIsometric();
-        //this.sprite.drawRect.x += iso_move.x;
-        //this.sprite.drawRect.y += iso_move.y;
     }
 
     move_to_position(posnew){
