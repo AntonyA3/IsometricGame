@@ -67,6 +67,30 @@ class Game{
         }
         request.open("POST","http://127.0.0.1:8000/index.php?roomid=2", true);
         request.send();
+
+
+        request = new XMLHttpRequest();
+        request.onreadystatechange = function(){
+
+            if(this.readyState ==4 && this.status ==200){
+                
+                World.createRoomTransition(this, game.world)
+            }
+        }
+        request.open("POST","http://127.0.0.1:8000/index.php?roomtransitionid=1", true);
+        request.send();
+
+
+        request = new XMLHttpRequest();
+        request.onreadystatechange = function(){
+
+            if(this.readyState ==4 && this.status ==200){
+                
+                World.createRoomTransition(this, game.world)
+            }
+        }
+        request.open("POST","http://127.0.0.1:8000/index.php?roomtransitionid=2", true);
+        request.send();
             
     }
 

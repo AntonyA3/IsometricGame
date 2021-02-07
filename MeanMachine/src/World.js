@@ -1,4 +1,8 @@
 
+const TRANSITION_STATE = {
+    TRANSITIONING: 0,
+    NOT_TRANSITIONING: 1
+}
 class World{
     constructor(controlpad){
 
@@ -10,26 +14,27 @@ class World{
         this.roomMap = new Map();
 
         this.roomIsTransitioning = false;
+        this.transitionState = TRANSITION_STATE.NOT_TRANSITIONING;
         this.roomTransition = new Map();
-        this.roomTransition.set(1, new RoomTransition());
-        this.roomTransition.get(1).nextRoom = 2;
-
-        this.roomTransition.set(2, new RoomTransition());
-        this.roomTransition.get(2).nextRoom = 1;
-
- 
         this.activeRoomId = null;
-        
         this.activeRoomTransition = new RoomTransition() ;
         
 
      
     }
 
-    freezePlayer(value){
-        this.roomMap.get(this.activeRoomId).freezePlayer(value);
+    static createRoomTransition(request,world){
+        var json = request.response.slice(1);
+        var data = JSON.parse(json);
+        var transition =  JSON.parse(data.data);
+        var id = JSON.parse(data.id);
+        var result = DataLoader.RoomTransitionFromJSON(transition);
+        world.roomTransition.set(id, result);
+
 
     }
+
+   
 
     setActiveRoomByID(id){
         this.activeRoomId = id
@@ -48,12 +53,11 @@ class World{
     }
 
     requestRoomByTransitionID(id){
-        if(!this.activeRoomTransition.transitioning){
-            this.activeRoomTransition = this.roomTransition.get(id);
-            this.activeRoomTransition.startTransition(this);
-        }
+        this.activeRoomTransition = this.roomTransition.get(id);
+        this.activeRoomTransition.state = ROOM_TRANSITION_STATE.TRANSITIONING;
+        this.activeRoomTransition.transition = true;
         
-
+        
     }
 
     update(elapsed){
@@ -61,10 +65,16 @@ class World{
         if(this.activeRoomId != null){
             this.roomMap.get(this.activeRoomId).update(elapsed)
         }
-        if(this.activeRoomTransition.transitioning){
+    
+        if(this.activeRoomTransition != null){
             this.activeRoomTransition.update(elapsed, this)
-        }
 
+        }
+        
+     
+
+
+        
         
     }
 
@@ -74,9 +84,8 @@ class World{
         if(this.activeRoomId != null){
             this.roomMap.get(this.activeRoomId).draw(ctx)
         }
-        if(this.activeRoomTransition.transitioning){
-            this.activeRoomTransition.drawOverlay(ctx, this.camera.bounds);
-        }
+        this.activeRoomTransition.drawOverlay(ctx, this.camera.bounds);
+        
        
         
     }

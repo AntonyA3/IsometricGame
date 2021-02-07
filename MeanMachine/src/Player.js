@@ -11,6 +11,7 @@ const PLAYER_CONTROLLER ={
 class Player{
     constructor(){
 
+        this.controllerState = PLAYER_CONTROLLER.HUMAN_PLAYER;
         this.position = Vector3.zero();
 
         this.XVector = new Vector3(1,0,0)
